@@ -14,6 +14,6 @@ module.exports = (app) => {
   })
 
   // 返回被定义的模型 User, 模型的约束是 UserSchema, 对应的数据库中会有一个 users 的 表
-  // 在 Controller里可以 this.app.model.User 获取模型
+  // 在 Controller里可以 this.app.model.Comment 获取模型
   return mongoose.model('Comment', CommentSchema)
 }

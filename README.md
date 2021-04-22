@@ -109,13 +109,67 @@ exports.validate = {
 }
 ```
 
-### 统一错误处理 中间件处理
+### 💛 统一错误处理 中间件处理
 - 在 `app/middleware` 目录下新建一个 `error_handler.js` 的文件来新建一个 `middleware`
 - 然后在`config.default.js`中的`middleware`中添加`中间件模块名`(驼峰命名)
 
 
+### 💛 Service 服务
+- `app`下添加`service`文件夹, 添加 `user.js`
+```js
+const Service = require('egg').Service
+
+class UserService extends Service {
+  // 定义 User 模型访问器
+  get User() {
+    return this.app.model.User
+  }
+  findByUserName() {
+    this.User
+  }
+  findByEmail() {}
+  createUser() {}
+}
+module.exports = UserService
+```
+
+### 💛 JWT: JSON Web Token
+- `npm i jsonwebtoken --save`
+
+### 💛 添加全局 jwt 配置
+```js
+// config.default.js
+  config.jwt = {
+    secret: '68fc7856-2359-4bd4-85d2-8e9914bb63d5',
+    expiresIn: '1d',
+  }
+// usage in service
+this.app.config.jwt.expiresIn
+this.app.config.jwt.secret
+```
+
+### 💛 配置 extend
+- 在`app`下添加`extend`文件夹, 添加`helper.js`
+```js
+// app/extend/helper.js
+const crypto = require('crypto')
+exports.md5 = (str) => {
+  return crypto.createHash('md5').update(str).digest('hex')
+}
+
+// 在 xxxxService.js 中直接调用
+this.ctx.helper.md5(data.password)
+```
+- ❗❗❗ 只有`helper.js`才能被识别
+
+
 ### 💛 启动 mongoDB
 - mongod --dbpath="C:\Leslie\MongoDB\data"
+
+
+### 使用 Model vs Service 
+- `this.app.model.User`
+- `this.service.user`
 
 ### 💛 router 设置基础路径
 ```js
