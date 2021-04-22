@@ -14,7 +14,7 @@ class UserService extends Service {
   findByEmail(email) {
     return this.User.findOne({
       email,
-    })
+    }).select('+password') // 把 password 信息查询出来
   }
   async createUser(data) {
     this.ctx.helper.print()

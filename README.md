@@ -103,6 +103,7 @@ exports.mongoose = {
 - `npm i egg-validate --save`
 ```js
 //  config/plugin.js
+//  在 ctx 对象上 挂载 validate 方法
 exports.validate = {
   enable: true,
   package: 'egg-validate',
@@ -148,7 +149,7 @@ this.app.config.jwt.expiresIn
 this.app.config.jwt.secret
 ```
 
-### 💛 配置 extend
+### 💛 配置 extend: 个人理解是 utils 工具类
 - 在`app`下添加`extend`文件夹, 添加`helper.js`
 ```js
 // app/extend/helper.js
@@ -161,7 +162,6 @@ exports.md5 = (str) => {
 this.ctx.helper.md5(data.password)
 ```
 - ❗❗❗ 只有`helper.js`才能被识别
-
 
 ### 💛 启动 mongoDB
 - mongod --dbpath="C:\Leslie\MongoDB\data"
@@ -196,3 +196,14 @@ $ npm stop
 - Use `npm run lint` to check code style.
 - Use `npm test` to run unit test.
 - Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
+
+
+## 🎃🎃 声明位置/引入方法(挂载到哪个属性)
+|声明位置|引入使用|DEMO|
+|--|--|--|
+|`/controller`|`this.app`|`this.app.controller`|
+|`/service`|`this`|`this.service.user`|
+|`/extend/helper.js`|`ctx`|`this.ctx.helper.md5()`|
+|`/model`|`this.app`|`const User = this.app.model.User`|
+|`/config/config.default.js`的`config.xxx`属性|`this.app.config`|`this.app.config.xxx`|
+|`/config/plugin.js` 的 `egg-validate`|`this.ctx`|`this.ctx.validate()`|

@@ -14,7 +14,7 @@ module.exports = (app) => {
   const UserSchema = new Schema({
     username: { type: String, required: true }, // 用户名
     email: { type: String, required: true }, // 邮箱
-    password: { type: String, required: true, select: false }, // 密码
+    password: { type: String, required: true, select: false }, // 默认查询不包含密码
     avatar: { type: String, default: null }, // 头像
     cover: { type: String, default: null }, // 封面
     channelDescription: { type: String, default: null }, // 频道介绍

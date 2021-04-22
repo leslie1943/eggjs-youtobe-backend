@@ -7,5 +7,5 @@ exports.md5 = (str) => {
 
 // 测试 helper
 exports.print = () => {
-  console.info('print test')
+  console.info(`[Current time]: ${Date.now()}`)
 }
