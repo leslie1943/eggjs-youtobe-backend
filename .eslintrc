@@ -2,6 +2,7 @@
   "extends": "eslint-config-egg",
   "rules": {
     "arrow-parens": "off",
-    "semi": "off"
+    "semi": "off",
+    "array-bracket-spacing":"off"
   }
 }

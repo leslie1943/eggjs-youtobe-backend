@@ -69,33 +69,61 @@
 - 使用 Edge 浏览器搜索 `cross-request` 添加扩展
 - YApi 新版如何查看 http 请求数据[https://juejin.cn/post/6844903795743260685]
 
-
-### 安装 egg 脚手架工具
+### 💛 安装 egg 脚手架工具 / Development
 -  npm install -g create-egg
--  
+-  npm i
+-  npm run dev
+-  open http://localhost:7001/
 
-see [egg docs][egg] for more detail.
+### 💛 egg-mongoose
+- npm i egg-mongoose --save
+- 找到 根目录下 `config/plugin`
+```js
+exports.mongoose = {
+  enable: true,
+  package: 'egg-mongoose',
+}
+```
+- 配置连接: 找到`config/config.default.js`,加入下面的代码
+```js
+  config.mongoose = {
+    client: {
+      // youtobe 是 数据库
+      url: 'mongodb://127.0.0.1/youtobe',
+      options: {
+          useUnifiedTopology: true
+      },
+      // mongoose global plugins, expected a function or an array of function and options
+      plugins: [],
+    },
+  }
+```
 
-### Development
+### 💛 启动 mongoDB
+- mongod --dbpath="C:\Leslie\MongoDB\data"
 
-```bash
-$ npm i
-$ npm run dev
-$ open http://localhost:7001/
+### 💛 router 设置基础路径
+```js
+router.prefix('/api/v1') // 设置基础路径
+```
+
+### 💛 关闭 csrf
+```js
+// config.default.js
+ config.security = {
+    csrf: {
+      enable: false,
+    },
+  }
 ```
 
 ### Deploy
-
 ```bash
 $ npm start
 $ npm stop
 ```
 
 ### npm scripts
-
 - Use `npm run lint` to check code style.
 - Use `npm test` to run unit test.
 - Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
-
-
-[egg]: https://eggjs.org

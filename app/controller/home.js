@@ -5,7 +5,15 @@ const Controller = require('egg').Controller
 class HomeController extends Controller {
   async index() {
     const { ctx } = this
-    ctx.body = '<h1>Hello, egg</h1>'
+    const User = this.app.model.User
+
+    // 新增一个 user
+    await new User({
+      userName: 'admin',
+      password: 'admin',
+    }).save()
+
+    ctx.body = 'Hello, egg'
   }
 }
 
