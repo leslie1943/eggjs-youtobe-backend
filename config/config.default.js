@@ -1,5 +1,3 @@
-/* eslint valid-jsdoc: "off" */
-
 'use strict'
 
 /**
@@ -21,6 +19,24 @@ module.exports = (appInfo) => {
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
+  }
+
+  config.mongoose = {
+    client: {
+      // youtobe 是 数据库
+      url: 'mongodb://127.0.0.1/youtobe',
+      options: {
+        useUnifiedTopology: true,
+      },
+      // mongoose global plugins, expected a function or an array of function and options
+      plugins: [],
+    },
+  }
+
+  config.security = {
+    csrf: {
+      enable: false,
+    },
   }
 
   return {
