@@ -1,5 +1,3 @@
-'use strict'
-
 module.exports = (app) => {
   // 获取 mongoose 实例
   const mongoose = app.mongoose
