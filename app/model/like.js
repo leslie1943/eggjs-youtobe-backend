@@ -1,4 +1,4 @@
-'use strict'
+// 'use strict'
 
 module.exports = (app) => {
   // 获取 mongoose 实例

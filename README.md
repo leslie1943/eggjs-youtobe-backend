@@ -75,7 +75,7 @@
 -  npm run dev
 -  open http://localhost:7001/
 
-### 💛 egg-mongoose
+### 💛 Plugin: egg-mongoose
 - npm i egg-mongoose --save
 - 找到 根目录下 `config/plugin`
 ```js
@@ -98,6 +98,21 @@ exports.mongoose = {
     },
   }
 ```
+
+### 💛 Plugin: egg-validate: 开启 validate 插件
+- `npm i egg-validate --save`
+```js
+//  config/plugin.js
+exports.validate = {
+  enable: true,
+  package: 'egg-validate',
+}
+```
+
+### 统一错误处理 中间件处理
+- 在 `app/middleware` 目录下新建一个 `error_handler.js` 的文件来新建一个 `middleware`
+- 然后在`config.default.js`中的`middleware`中添加`中间件模块名`(驼峰命名)
+
 
 ### 💛 启动 mongoDB
 - mongod --dbpath="C:\Leslie\MongoDB\data"
