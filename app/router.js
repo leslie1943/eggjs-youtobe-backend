@@ -7,5 +7,5 @@ module.exports = (app) => {
   router.post('/users/login', controller.user.login)
 
   // 先经过 auth middleware
-  router.get('/user', auth, controller.user.getCurrentUser)
+  router.patch('/user', auth, controller.user.update)
 }

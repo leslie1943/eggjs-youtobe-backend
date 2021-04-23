@@ -106,6 +106,57 @@ class UserController extends Controller {
       },
     }
   }
+
+  async update() {
+    // 1.基本数据验证
+    const body = this.ctx.request.body
+    this.ctx.validate(
+      {
+        email: { type: 'email', required: false },
+        password: { type: 'string', required: false },
+        username: { type: 'string', required: false },
+        channelDescription: { type: 'string', required: false },
+        avatar: { type: 'string', required: false },
+      },
+      body
+    )
+
+    // 获取 user service
+    const userService = this.service.user
+
+    // 2.校验用户是否已存在
+    if (body.username) {
+      if (body.username !== this.ctx.user.username && (await userService.findByUsername(body.email))) {
+        this.ctx.throw(422, 'username 已存在')
+      }
+    }
+
+    // 3.校验邮箱是否已存在
+    if (body.email) {
+      // 当前请求的email和登录的email不相等 && 邮箱存在
+      if (body.email !== this.ctx.user.email && (await userService.findByEmail(body.email))) {
+        this.ctx.throw(422, 'email 已存在')
+      }
+    }
+
+    // 密码做 md5
+    if (body.password) {
+      body.password = this.ctx.helper.md5(body.password)
+    }
+
+    // 4.执行更新
+    const user = await userService.updateUser(body)
+    // 5. 返回更新后的用户
+    this.ctx.status = 200
+    this.ctx.body = {
+      user: {
+        username: user.username,
+        email: user.email,
+        channelDescription: user.channelDescription,
+        avatar: user.avatar,
+      },
+    }
+  }
 }
 
 module.exports = UserController
