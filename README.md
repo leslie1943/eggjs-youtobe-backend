@@ -197,8 +197,21 @@ $ npm stop
 - Use `npm test` to run unit test.
 - Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
 
+### npm run commit: git-cz
+1. `npm install commitizen cz-conventional-changelog --save-dev`
+2. 修改`package.json`
+```json
+"script":{
+  "commit": "git-cz"
+},
+"config":{
+  "commitizen":{
+    "path": "./node_modules/cz-conventional-changelog"
+  }
+}
+```
 
-## 🎃🎃 声明位置/引入方法(挂载到哪个属性)
+### 🎃🎃 声明位置/引入方法(挂载到哪个属性)
 |声明位置|引入使用|DEMO|
 |--|--|--|
 |`/controller`|`this.app`|`this.app.controller`|
@@ -207,3 +220,5 @@ $ npm stop
 |`/model`|`this.app`|`const User = this.app.model.User`|
 |`/config/config.default.js`的`config.xxx`属性|`this.app.config`|`this.app.config.xxx`|
 |`/config/plugin.js` 的 `egg-validate`|`this.ctx`|`this.ctx.validate()`|
+
+
