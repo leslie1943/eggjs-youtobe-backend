@@ -21,6 +21,7 @@ module.exports = (appInfo) => {
     // myAppName: 'egg',
   }
 
+  // 配置了 mongoose 插件, 项目运行时自动寻找这个配置
   config.mongoose = {
     client: {
       // youtobe 是 数据库
@@ -32,11 +33,16 @@ module.exports = (appInfo) => {
       plugins: [],
     },
   }
-
+  // config.xxx 都是全局属性
   config.security = {
     csrf: {
       enable: false,
     },
+  }
+
+  config.jwt = {
+    secret: '68fc7856-2359-4bd4-85d2-8e9914bb63d5',
+    expiresIn: '1d',
   }
 
   return {

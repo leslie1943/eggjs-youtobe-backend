@@ -103,19 +103,73 @@ exports.mongoose = {
 - `npm i egg-validate --save`
 ```js
 //  config/plugin.js
+//  在 ctx 对象上 挂载 validate 方法
 exports.validate = {
   enable: true,
   package: 'egg-validate',
 }
 ```
 
-### 统一错误处理 中间件处理
+### 💛 统一错误处理 中间件处理
 - 在 `app/middleware` 目录下新建一个 `error_handler.js` 的文件来新建一个 `middleware`
 - 然后在`config.default.js`中的`middleware`中添加`中间件模块名`(驼峰命名)
 
 
+### 💛 Service 服务
+- `app`下添加`service`文件夹, 添加 `user.js`
+```js
+const Service = require('egg').Service
+
+class UserService extends Service {
+  // 定义 User 模型访问器
+  get User() {
+    return this.app.model.User
+  }
+  findByUserName() {
+    this.User
+  }
+  findByEmail() {}
+  createUser() {}
+}
+module.exports = UserService
+```
+
+### 💛 JWT: JSON Web Token
+- `npm i jsonwebtoken --save`
+
+### 💛 添加全局 jwt 配置
+```js
+// config.default.js
+  config.jwt = {
+    secret: '68fc7856-2359-4bd4-85d2-8e9914bb63d5',
+    expiresIn: '1d',
+  }
+// usage in service
+this.app.config.jwt.expiresIn
+this.app.config.jwt.secret
+```
+
+### 💛 配置 extend: 个人理解是 utils 工具类
+- 在`app`下添加`extend`文件夹, 添加`helper.js`
+```js
+// app/extend/helper.js
+const crypto = require('crypto')
+exports.md5 = (str) => {
+  return crypto.createHash('md5').update(str).digest('hex')
+}
+
+// 在 xxxxService.js 中直接调用
+this.ctx.helper.md5(data.password)
+```
+- ❗❗❗ 只有`helper.js`才能被识别
+
 ### 💛 启动 mongoDB
 - mongod --dbpath="C:\Leslie\MongoDB\data"
+
+
+### 使用 Model vs Service 
+- `this.app.model.User`
+- `this.service.user`
 
 ### 💛 router 设置基础路径
 ```js
@@ -142,3 +196,14 @@ $ npm stop
 - Use `npm run lint` to check code style.
 - Use `npm test` to run unit test.
 - Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
+
+
+## 🎃🎃 声明位置/引入方法(挂载到哪个属性)
+|声明位置|引入使用|DEMO|
+|--|--|--|
+|`/controller`|`this.app`|`this.app.controller`|
+|`/service`|`this`|`this.service.user`|
+|`/extend/helper.js`|`ctx`|`this.ctx.helper.md5()`|
+|`/model`|`this.app`|`const User = this.app.model.User`|
+|`/config/config.default.js`的`config.xxx`属性|`this.app.config`|`this.app.config.xxx`|
+|`/config/plugin.js` 的 `egg-validate`|`this.ctx`|`this.ctx.validate()`|
