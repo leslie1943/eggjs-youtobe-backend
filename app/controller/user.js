@@ -107,6 +107,7 @@ class UserController extends Controller {
     }
   }
 
+  // 更新登录用户信息
   async update() {
     // 1.基本数据验证
     const body = this.ctx.request.body
@@ -123,10 +124,11 @@ class UserController extends Controller {
 
     // 获取 user service
     const userService = this.service.user
+    console.info('this.ctx.user', this.ctx.user)
 
     // 2.校验用户是否已存在
     if (body.username) {
-      if (body.username !== this.ctx.user.username && (await userService.findByUsername(body.email))) {
+      if (body.username !== this.ctx.user.username && (await userService.findByUsername(body.username))) {
         this.ctx.throw(422, 'username 已存在')
       }
     }
@@ -139,14 +141,14 @@ class UserController extends Controller {
       }
     }
 
-    // 密码做 md5
+    // 5.密码做 md5
     if (body.password) {
       body.password = this.ctx.helper.md5(body.password)
     }
 
-    // 4.执行更新
+    // 6.执行更新
     const user = await userService.updateUser(body)
-    // 5. 返回更新后的用户
+    // 7. 返回更新后的用户
     this.ctx.status = 200
     this.ctx.body = {
       user: {
@@ -154,6 +156,27 @@ class UserController extends Controller {
         email: user.email,
         channelDescription: user.channelDescription,
         avatar: user.avatar,
+      },
+    }
+  }
+
+  // 用户订阅
+  async subscribe() {
+    const userId = this.ctx.user._id
+    const channelId = this.ctx.params.userId // 要订阅的用户充当 channelId
+
+    // 1.用户不能订阅自己
+    if (userId.equals(channelId)) {
+      this.ctx.throw(422, '用户不能订阅自己')
+    }
+
+    // 2.添加订阅
+    const user = await this.service.user.subscribe(userId, channelId)
+    // 3. 发送响应
+    this.ctx.body = {
+      user: {
+        ...user.toJSON(), // 转换成普通JS对象
+        isSubscribed: true,
       },
     }
   }

@@ -41,6 +41,35 @@ class UserService extends Service {
     // new: true => 返回更新后的user
     return this.User.findByIdAndUpdate(this.ctx.user._id, data, { new: true })
   }
+
+  // 用户订阅
+  async subscribe(userId, channelId) {
+    const { Subscription, User } = this.app.model
+    // 1. 检查是否已经订阅
+    const record = await Subscription.findOne({
+      user: userId,
+      channel: channelId,
+    })
+
+    // 💛 被订阅的用户
+    const beSubscribedUser = await User.findById(channelId)
+
+    // 2. 没有订阅, 添加订阅
+    if (!record) {
+      const subscription = new Subscription({
+        user: userId,
+        channel: channelId,
+      })
+      await subscription.save()
+
+      // 💛 更新用户的订阅数量
+      beSubscribedUser.subscribersCount++
+      // 💛 更新到数据库中
+      await beSubscribedUser.save()
+    }
+    // 3. 返回用户信息
+    return beSubscribedUser
+  }
 }
 
 module.exports = UserService
