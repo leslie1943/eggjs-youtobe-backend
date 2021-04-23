@@ -88,6 +88,24 @@ class UserController extends Controller {
       },
     }
   }
+
+  // 获取登录用户信息
+  async getCurrentUser() {
+    // 验证 token: 在 auth 中间件中完成
+    // 获取用户: 在 auth 中间件中完成
+    // 发送响应
+    const user = this.ctx.user
+    this.ctx.status = 201 // 设置响应码
+    this.ctx.body = {
+      user: {
+        username: user.username,
+        email: user.email,
+        token: this.ctx.headers.authorization,
+        channelDescription: user.channelDescription,
+        avatar: user.avatar,
+      },
+    }
+  }
 }
 
 module.exports = UserController

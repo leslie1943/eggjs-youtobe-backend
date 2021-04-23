@@ -21,14 +21,12 @@
 - `客户端技术选型`
 - `Vue3` 系列技术栈
 
-
 ### 💛 接口设计
 1. 基于 Restful 规范
 2. 基于 JWT 身份认证
 3. 接口基础路径: /api/v1
 4. 使用`CORS`处理跨域
 5. 请求与响应均为 `JSON` 格式数据
-
 
 ### 💛 使用 Yapi 管理接口
 - `github`: `https://github.com/YMFE/yapi`
@@ -63,6 +61,7 @@
 ### 💛 使用 Yapi - 3 - 服务管理
 - 访问 `http://127.0.0.1:3000/`
 - 用户名: `admin@admin.com`  密码: `ymfe.org` (默认密码)
+- 用户名: `admin@admin.com`  密码: `111111` (修改后的密码)
 
 ### 💛 使用 Yapi - 4 - 扩展教程 chrome 安装 yapi 
 - chrome 安装 yapi 扩展教程[https://juejin.cn/post/6844904057707085832]
@@ -113,7 +112,6 @@ exports.validate = {
 ### 💛 统一错误处理 中间件处理
 - 在 `app/middleware` 目录下新建一个 `error_handler.js` 的文件来新建一个 `middleware`
 - 然后在`config.default.js`中的`middleware`中添加`中间件模块名`(驼峰命名)
-
 
 ### 💛 Service 服务
 - `app`下添加`service`文件夹, 添加 `user.js`
@@ -166,7 +164,6 @@ this.ctx.helper.md5(data.password)
 ### 💛 启动 mongoDB
 - mongod --dbpath="C:\Leslie\MongoDB\data"
 
-
 ### 使用 Model vs Service 
 - `this.app.model.User`
 - `this.service.user`
@@ -186,24 +183,45 @@ router.prefix('/api/v1') // 设置基础路径
   }
 ```
 
-### Deploy
+### 💛 npm scripts
+- Use `npm run lint` to check code style.
+- Use `npm test` to run unit test.
+- Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
+
+### 💛npm run commit: git-cz
+1. `npm install commitizen cz-conventional-changelog --save-dev`
+2. 修改`package.json`
+```json
+"script":{
+  "commit": "git-cz"
+},
+"config":{
+  "commitizen":{
+    "path": "./node_modules/cz-conventional-changelog"
+  }
+}
+```
+
+### 🎃🎃 声明位置/引入方法(挂载到哪个属性)
+|声明位置|引入使用|DEMO|
+|--|--|--|
+|`/controller`|`this.app`|`this.app.controller`|
+|`/service`|`this || ctx`|`this.service.user`|
+|`/extend/helper.js`|`ctx`|`this.ctx.helper.md5()`|
+|`/model`|`this.app`|`const User = this.app.model.User`|
+|`/config/config.default.js`的`config.xxx`属性|`this.app.config`|`this.app.config.xxx`|
+|`/config/plugin.js` 的 `egg-validate`|`this.ctx`|`this.ctx.validate()`|
+
+### 🚀 Deploy
 ```bash
 $ npm start
 $ npm stop
 ```
 
-### npm scripts
-- Use `npm run lint` to check code style.
-- Use `npm test` to run unit test.
-- Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
-
-
-## 🎃🎃 声明位置/引入方法(挂载到哪个属性)
-|声明位置|引入使用|DEMO|
-|--|--|--|
-|`/controller`|`this.app`|`this.app.controller`|
-|`/service`|`this`|`this.service.user`|
-|`/extend/helper.js`|`ctx`|`this.ctx.helper.md5()`|
-|`/model`|`this.app`|`const User = this.app.model.User`|
-|`/config/config.default.js`的`config.xxx`属性|`this.app.config`|`this.app.config.xxx`|
-|`/config/plugin.js` 的 `egg-validate`|`this.ctx`|`this.ctx.validate()`|
+### 🚀 获取当前用户信息
+0. 定义`auth`中间件
+1. 在`xxxService`中定义验证token的方法`verifyToken`
+2. 添加路由 `router.get('/user', auth, controller.user.getCurrentUser)` 并加入`auth`中间件验证
+3. 在`/controller/user.js`下添加方法`getCurrentUser`
+4. `token 验证` 和 `挂载 user 到 ctx 上`已经在`auth`中间件中完成
+5. 发送响应

@@ -30,6 +30,11 @@ class UserService extends Service {
       expiresIn: this.app.config.jwt.expiresIn,
     })
   }
+
+  // 验证 token
+  verifyToken(token) {
+    return jwt.verify(token, this.app.config.jwt.secret)
+  }
 }
 
 module.exports = UserService
