@@ -70,6 +70,33 @@ class UserService extends Service {
     // 3. 无论有没有订阅都返回用户信息
     return targetUser
   }
+
+  // 用户订阅
+  async unsubscribe(userId, channelId) {
+    const { Subscription, User } = this.app.model
+
+    // 查询要取消的订阅记录
+    const record = await Subscription.findOne({
+      user: userId,
+      channel: channelId,
+    })
+
+    // 被订阅的记录(人)
+    const targetUser = await User.findById(channelId)
+
+    // 2.已经订阅 => 删除订阅
+    if (record) {
+      // 删除订阅记录
+      await record.remove()
+
+      // 💛 更新用户的订阅数量
+      targetUser.subscribersCount--
+      // 💛 更新到数据库中
+      await targetUser.save()
+    }
+    // 3. 无论有没有订阅都返回用户信息
+    return targetUser
+  }
 }
 
 module.exports = UserService

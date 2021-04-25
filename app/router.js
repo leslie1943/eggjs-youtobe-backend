@@ -11,7 +11,11 @@ module.exports = (app) => {
   // 先经过 auth middleware
   router.get('/user', auth, controller.user.getCurrentUser)
   router.patch('/user', auth, controller.user.update)
+  // 获取用户信息
+  router.get('/users/:userId', app.middleware.auth({ required: false }), controller.user.getUser)
 
   // 用户订阅
   router.post('/users/:userId/subscribe', auth, controller.user.subscribe)
+  // 取消用户订阅
+  router.delete('/users/:userId/subscribe', auth, controller.user.unsubscribe)
 }

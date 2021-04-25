@@ -100,7 +100,7 @@ class UserController extends Controller {
       user: {
         username: user.username,
         email: user.email,
-        token: this.ctx.headers.authorization,
+        token: this.ctx.headers.authorization.split('Bearer ')[1],
         channelDescription: user.channelDescription,
         avatar: user.avatar,
       },
@@ -184,6 +184,72 @@ class UserController extends Controller {
           'subscribersCount',
         ]), // 转换成普通JS对象
         isSubscribed: true,
+      },
+    }
+  }
+
+  // 用户订阅
+  async unsubscribe() {
+    const userId = this.ctx.user._id
+    const channelId = this.ctx.params.userId // 要订阅的用户充当 channelId
+
+    // 1.用户不能订阅自己
+    if (userId.equals(channelId)) {
+      this.ctx.throw(422, '用户不能订阅自己')
+    }
+
+    // 2.添加订阅
+    const user = await this.service.user.unsubscribe(userId, channelId)
+    // 3. 发送响应
+    this.ctx.body = {
+      user: {
+        ...this.ctx.helper._.pick(user, [
+          'username',
+          'email',
+          'avatar',
+          'cover',
+          'channelDescription',
+          'subscribersCount',
+        ]), // 转换成普通JS对象
+        isSubscribed: false,
+      },
+    }
+  }
+
+  // 获取用户信息
+  async getUser() {
+    // 1. 获取订阅状态
+    let isSubscribed = false
+
+    // 由于中间件的加持, 上下文中已经有了 cxt.user
+    if (this.ctx.user) {
+      // 获取订阅记录
+      const record = await this.app.model.Subscription.findOne({
+        user: this.ctx.user._id,
+        channel: this.ctx.params.userId,
+      })
+
+      // 如果找到了记录,说明该用户对于目标频道已经订阅了
+      if (record) {
+        isSubscribed = true
+      }
+    }
+
+    // 2. 获取用户信息
+    const user = await this.app.model.User.findById(this.ctx.params.userId)
+
+    // 3. 发送响应
+    this.ctx.body = {
+      user: {
+        ...this.ctx.helper._.pick(user, [
+          'username',
+          'email',
+          'avatar',
+          'cover',
+          'channelDescription',
+          'subscribersCount',
+        ]), // 转换成普通JS对象
+        isSubscribed,
       },
     }
   }
