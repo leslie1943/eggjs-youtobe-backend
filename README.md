@@ -225,3 +225,17 @@ $ npm stop
 3. 在`/controller/user.js`下添加方法`getCurrentUser`
 4. `token 验证` 和 `挂载 user 到 ctx 上`已经在`auth`中间件中完成
 5. 发送响应
+
+
+### 🚀 lodash-pick
+- `npm install lodash --save`
+- 挂载到 `helper`
+```js
+// 挂载 lodash
+exports._ = _
+```
+
+### exports vs module.exports
+- `module.exports = modleName` ~~~ `export default modelName`
+- `exports.something` ~~ `export something`
+

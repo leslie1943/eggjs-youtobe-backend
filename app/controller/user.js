@@ -106,6 +106,87 @@ class UserController extends Controller {
       },
     }
   }
+
+  // 更新登录用户信息
+  async update() {
+    // 1.基本数据验证
+    const body = this.ctx.request.body
+    this.ctx.validate(
+      {
+        email: { type: 'email', required: false },
+        password: { type: 'string', required: false },
+        username: { type: 'string', required: false },
+        channelDescription: { type: 'string', required: false },
+        avatar: { type: 'string', required: false },
+      },
+      body
+    )
+
+    // 获取 user service
+    const userService = this.service.user
+    console.info('this.ctx.user', this.ctx.user)
+
+    // 2.校验用户是否已存在
+    if (body.username) {
+      if (body.username !== this.ctx.user.username && (await userService.findByUsername(body.username))) {
+        this.ctx.throw(422, 'username 已存在')
+      }
+    }
+
+    // 3.校验邮箱是否已存在
+    if (body.email) {
+      // 当前请求的email和登录的email不相等 && 邮箱存在
+      if (body.email !== this.ctx.user.email && (await userService.findByEmail(body.email))) {
+        this.ctx.throw(422, 'email 已存在')
+      }
+    }
+
+    // 5.密码做 md5
+    if (body.password) {
+      body.password = this.ctx.helper.md5(body.password)
+    }
+
+    // 6.执行更新
+    const user = await userService.updateUser(body)
+    // 7. 返回更新后的用户
+    this.ctx.status = 200
+    this.ctx.body = {
+      user: {
+        username: user.username,
+        email: user.email,
+        channelDescription: user.channelDescription,
+        avatar: user.avatar,
+      },
+    }
+  }
+
+  // 用户订阅
+  async subscribe() {
+    const userId = this.ctx.user._id
+    const channelId = this.ctx.params.userId // 要订阅的用户充当 channelId
+
+    // 1.用户不能订阅自己
+    if (userId.equals(channelId)) {
+      this.ctx.throw(422, '用户不能订阅自己')
+    }
+
+    // 2.添加订阅
+    const user = await this.service.user.subscribe(userId, channelId)
+    // 3. 发送响应
+    this.ctx.body = {
+      user: {
+        ...this.ctx.helper._.pick(user, [
+          'username',
+          'email',
+          'avatar',
+          'cover',
+          'channelDescription',
+          'subscribersCount',
+        ]), // 转换成普通JS对象
+        isSubscribed: true,
+      },
+    }
+  }
 }
 
 module.exports = UserController
