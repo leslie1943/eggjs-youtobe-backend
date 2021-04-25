@@ -1,4 +1,5 @@
 const crypto = require('crypto')
+const _ = require('lodash')
 
 // 加密
 exports.md5 = (str) => {
@@ -9,3 +10,6 @@ exports.md5 = (str) => {
 exports.print = () => {
   console.info(`[Current time]: ${Date.now()}`)
 }
+
+// 挂载 lodash
+exports._ = _

@@ -52,7 +52,7 @@ class UserService extends Service {
     })
 
     // 💛 被订阅的用户
-    const beSubscribedUser = await User.findById(channelId)
+    const targetUser = await User.findById(channelId)
 
     // 2. 没有订阅, 添加订阅
     if (!record) {
@@ -63,12 +63,12 @@ class UserService extends Service {
       await subscription.save()
 
       // 💛 更新用户的订阅数量
-      beSubscribedUser.subscribersCount++
+      targetUser.subscribersCount++
       // 💛 更新到数据库中
-      await beSubscribedUser.save()
+      await targetUser.save()
     }
-    // 3. 返回用户信息
-    return beSubscribedUser
+    // 3. 无论有没有订阅都返回用户信息
+    return targetUser
   }
 }
 

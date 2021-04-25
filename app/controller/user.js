@@ -175,7 +175,14 @@ class UserController extends Controller {
     // 3. 发送响应
     this.ctx.body = {
       user: {
-        ...user.toJSON(), // 转换成普通JS对象
+        ...this.ctx.helper._.pick(user, [
+          'username',
+          'email',
+          'avatar',
+          'cover',
+          'channelDescription',
+          'subscribersCount',
+        ]), // 转换成普通JS对象
         isSubscribed: true,
       },
     }
