@@ -4,6 +4,9 @@
     "strict":"off",
     "arrow-parens": "off",
     "semi": "off",
-    "array-bracket-spacing":"off"
+    "array-bracket-spacing":"off",
+    "space-before-function-paren":"off",
+    "jsdoc/require-param-description":"off",
+    "jsdoc/require-returns-type":"off"
   }
 }

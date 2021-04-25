@@ -1,5 +1,3 @@
-'use strict'
-
 const Controller = require('egg').Controller
 
 class UserController extends Controller {
@@ -251,6 +249,21 @@ class UserController extends Controller {
         ]), // 转换成普通JS对象
         isSubscribed,
       },
+    }
+  }
+
+  // 获取用户信息
+  async getSubscriptions() {
+    const Subscription = this.app.model.Subscription
+    // 具体看 `ReadMe.md`的 populate()
+    let subscriptions = await Subscription.find({ user: this.ctx.params.userId }).populate('channel')
+
+    subscriptions = subscriptions.map((item) => {
+      return this.ctx.helper._.pick(item.channel, ['_id', 'username', 'avatar', 'email'])
+    })
+
+    this.ctx.body = {
+      subscriptions,
     }
   }
 }

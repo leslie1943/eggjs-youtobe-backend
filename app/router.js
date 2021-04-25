@@ -18,4 +18,10 @@ module.exports = (app) => {
   router.post('/users/:userId/subscribe', auth, controller.user.subscribe)
   // 取消用户订阅
   router.delete('/users/:userId/subscribe', auth, controller.user.unsubscribe)
+
+  // 获取用户频道列表
+  router.get('/users/:userId/subscriptions', controller.user.getSubscriptions)
+
+  // 阿里云 Vod
+  router.get('/vod/CreateUploadVideo', auth, controller.vod.createUploadVideo)
 }

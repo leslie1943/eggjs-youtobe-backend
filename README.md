@@ -239,3 +239,144 @@ exports._ = _
 - `module.exports = modleName` ~~~ `export default modelName`
 - `exports.something` ~~ `export something`
 
+
+### 🚀 对于 populate()
+- `Subscription Schema`: 订阅模型
+```js
+// Model Schema
+  const SubscriptionSchema = new Schema({
+    user: { type: mongoose.ObjectId, required: true, ref: 'User' },
+    channel: { type: mongoose.ObjectId, required: true, ref: 'User' },
+    createdAt: { type: Date, default: Date.now }, // 创建时间
+    updatedAt: { type: Date, default: Date.now }, // 更新时间
+  })
+```
+
+- 对于 `Subscription`这个数据`Model`,在查询出来数据后,实际上`user/channel`返回的都是 `ObjectId`
+```js
+ const subscriptions = await Subscription.find({ user: this.ctx.params.userId })
+ /**
+subscriptions: [
+  {
+    _id: 60850134ffea9353c4dc68cb,
+    user: 60828c089d311c0bb0f6fa03,
+    channel: 6082976eb3bfcd372c7d9aad,
+    createdAt: 2021-04-25T05:42:12.738Z,
+    updatedAt: 2021-04-25T05:42:12.738Z,
+    __v: 0
+  }
+]
+**/
+```
+- 如果希望获取真正的 `document` 数据而不是`ObjectId`, 需要对这种属性进行 `populate`, 得到如下图
+```js
+[
+  {
+    _id: 60850134ffea9353c4dc68cb,
+    user: 60828c089d311c0bb0f6fa03,
+    channel: { // be populated
+      avatar: null,
+      cover: null,
+      channelDescription: 0,
+      subscribersCount: '2',
+      _id: 6082976eb3bfcd372c7d9aad,
+      username: 'jack',
+      email: 'jack@jack.com',
+      createdAt: 2021-04-23T09:46:22.999Z,
+      updatedAt: 2021-04-23T09:46:22.999Z,
+      __v: 0
+    },
+    createdAt: 2021-04-25T05:42:12.738Z,
+    updatedAt: 2021-04-25T05:42:12.738Z,
+    __v: 0
+  }
+]
+```
+
+
+### 阿里云-视频点播
+- `https://www.aliyun.com/product/vod` - 9.9 套餐
+- 点播控制台
+- `https://vod.console.aliyun.com/#/media/video/detail/3beed1371c954be0987918c41487ec13/video`
+- 文档: `https://help.aliyun.com/document_detail/51512.html?spm=5176.12672711.0.dexternal.700d1fa3InZhJT`
+
+### 使用上传地址和凭证方式上传
+- 1. `web`客户端请求(egg.js)接口获取上传凭证和地址
+- 2. 在`egg.js`中请求阿里云`vod`获取上传地址和上传凭证
+- 3. 阿里云`vod`返回上传地址和上传凭证给`egg.js`
+- 4. `egg.js`返回频资和地址给`web`客户端.
+- 5. 上传:`OSS输入Bucket`
+- 6. 返回上传结果给`web`客户端
+
+<img src="./app/public/image/upload-flow.png">
+
+- [Web端SDK下载](https://help.aliyun.com/document_detail/51992.htm?spm=a2c4g.11186623.2.4.4b78b227IjMTmX#topic-1959787)
+- 解压进入`vue-demo`, `npm install` 然后`npm install env-cross -D`
+- 修改`package.json`
+```json
+"scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --inline --hot --host 0.0.0.0",
+    "build": "cross-env NODE_ENV=production webpack --progress"
+  },
+```
+
+### 媒体上传 - 客户端上传
+- [客户端上传](https://help.aliyun.com/document_detail/55398.html)
+- 客户端上传, 是指将移动端(`Web`, `iOS`, `Android`)或`PC`端媒体文件上传到点播存储, 适合 `UGC`, `PGC`, 运营后台等场景.本文为您介绍客户端上传的流程, 准备工作, 部署授权, 支持的功能和提供的 `SDK`.
+
+- 获取权限 `RAM` 访问控制台创建 `RAM` 用户,并授予 `VOD` 权限
+
+### Vod 媒体上传 - 部署授权服务
+- 在客户端上传媒体文件时, 会直接将文件上传到点播存储（基于`OSS`）, 不会再经服务端进行中转, 故客户端上传必须进行鉴权, 也就是需要您在应用服务器上部署授权服务。
+- `使用上传地址和凭证上传`
+- (安装`视频点播`-`服务端SDK`-`Node.js SDK`)[https://help.aliyun.com/document_detail/101351.html]
+- `npm install @alicloud/pop-core --save`
+- `Egg.js` 应用中 添加 `路由` 
+- `router.get('/vod/CreateUploadVideo', auth, controller.vod.createUploadVideo)`
+- 新增 `VodController` 在`Controller`里 初始化 `Vod Client`
+```js
+// src/controller/vod.js
+const RPCClient = require('@alicloud/pop-core').RPCClient
+
+function initVodClient(accessKeyId, accessKeySecret) {
+  const regionId = 'cn-shanghai' // 点播服务接入区域
+  const client = new RPCClient({
+    accessKeyId,
+    accessKeySecret,
+    endpoint: 'http://vod.' + regionId + '.aliyuncs.com',
+    apiVersion: '2017-03-21',
+  })
+
+  return client
+}
+
+class VodController extends Controller {
+  async createUploadVideo() {
+    const query = this.ctx.query
+
+    // 验证参数
+    this.ctx.validate(
+      {
+        Title: { type: 'string' },
+        FileName: { type: 'string' },
+      },
+      query
+    )
+
+    const vodClient = initVodClient('LTAI5tBKLjGhbcnbbY7zgAKs', 'qi4EBj6vykkFcKJUVBGh7C9qqBHpYR')
+    // 第一个参数是 action type
+    this.ctx.body = await vodClient.request('CreateUploadVideo', query, {})
+    // 此时 this.ctx.body 如下:
+    /*
+      {
+        UploadAddress: '0f20acfe70ac8ab14f08ce138ef0',
+        RequestId: 'eyJFbmRwb2ludCI6Imh0dHBzOi8vb3NzLWN222uLXNoYW5naGFpLmFsaXl1bmNzLmNvbSIsIkJ1Y2tldCI6Im91dGluLTNmNjNkMDgzYTU5ODExZWJhYWU4MDAxNjNlMWEzYjRhIiwiRmlsZU5hbWUiOiJzdi8xZDY2MjM3My0xNzkwODZmY2Q5MS8xZD333Y2MjM3My0xNzkwODZmY2Q5MS5tcDQifQ',
+        VideoId: '4A40440182-2233-4FE2-822177-055010BBC1C55A',
+        UploadAuth: 'eyJTZWN1cml0eVRva2VuIjoiQ0FJUzBBUjFxNkZ0NUIyeWZTaklyNURNR1BTQW1KdEk0SU95WVhERGlXNGpUYzVvbTVEbHJ6ejJJSDVFZW5OcUF1d2F2Lzh5bEd0VDZQZ1psclVxRnNBYUh4R2NNWlF0c2N3SnJsUHdKcGZa05YmFCMjUvelcrUGREZTBkc1Znb0lGS09waUdXRzNSTE5uK3p0Sjl4YmtlRStzS1VsNktTcUo4NFFGQW51NEVQVkZpSWU5OWtvZ3crdS9Mc3RCbksrYlRwRG5udDVYUi91UHVncHRVUnN4WTZKS241M0xYSzRXR0Q1zlpOGpiM3c1ZHRic0NsYm5KTzE4d0xwSHJ5WXNVUlpnL28zM0h4RzF4cjZmOXNZRUE9IiwiQWNjZXNzS2V5SWQiOiJTVFMuTlN5U040dURpV0FZY1ZybW52QUFEdFVOTSIsIkV4cGlyZVVUQ1RpbWUiOiIyMDIxLTA0LTI1VDEwOjUwOjE1WiIsIkFjY2Vzc0tleVNlY3JldCI6IkZBcjFLM1dieHRCdlZ6NU42M2lYSzdlWkFDd0tOSExQTmhrRUg2dFBXcnJ5IiwiRXhwaXJhdGlvbiI6IjM2MDAiLCJSZWdpb24iOiJjbi1zaGFuZ2hhaSJ9'
+      }
+    */
+  }
+}
+
+```
