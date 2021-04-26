@@ -380,3 +380,11 @@ class VodController extends Controller {
 }
 
 ```
+
+### Config 配置 - 多环境配置
+| `config` |
+| -- |
+|- `config.default.js` |
+|- `config.prod.js` |
+|- `config.unittest.js` |
+|- `config.local.js` |

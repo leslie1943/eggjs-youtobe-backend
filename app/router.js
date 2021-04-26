@@ -24,4 +24,5 @@ module.exports = (app) => {
 
   // 阿里云 Vod
   router.get('/vod/CreateUploadVideo', auth, controller.vod.createUploadVideo)
+  router.get('/vod/RefreshUploadVideo', auth, controller.vod.refreshUploadVideo)
 }

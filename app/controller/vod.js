@@ -1,26 +1,7 @@
 const Controller = require('egg').Controller
 
-const RPCClient = require('@alicloud/pop-core').RPCClient
-
-/**
- * 初始化 Vod Client
- * @param {*} accessKeyId
- * @param {*} accessKeySecret
- * @return void
- */
-function initVodClient(accessKeyId, accessKeySecret) {
-  const regionId = 'cn-shanghai' // 点播服务接入区域
-  const client = new RPCClient({
-    accessKeyId,
-    accessKeySecret,
-    endpoint: 'http://vod.' + regionId + '.aliyuncs.com',
-    apiVersion: '2017-03-21',
-  })
-
-  return client
-}
-
 class VodController extends Controller {
+  // 创建视频: 获取上传地址和凭证
   async createUploadVideo() {
     const query = this.ctx.query
 
@@ -33,9 +14,19 @@ class VodController extends Controller {
       query
     )
 
-    const vodClient = initVodClient('LTAI5tBKLjGhbcnbbY7zgAKs', 'qi4EBj6vykkFcKJUVBGh7C9qqBHpYR')
     // 第一个参数是 action
-    this.ctx.body = await vodClient.request('CreateUploadVideo', query, {})
+    this.ctx.body = await this.app.vodClient.request('CreateUploadVideo', query, {})
+  }
+
+  // 刷新视频: 获取上传地址和凭证
+  async refreshUploadVideo() {
+    const query = this.ctx.query
+
+    // 验证参数
+    this.ctx.validate({ VideoId: { type: 'string' } }, query)
+
+    // 第一个参数是 action
+    this.ctx.body = await this.app.vodClient.request('RefreshUploadVideo', query, {})
   }
 }
 
