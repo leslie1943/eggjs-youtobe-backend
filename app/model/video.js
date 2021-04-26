@@ -8,7 +8,7 @@ module.exports = (app) => {
   const VideoSchema = new Schema({
     title: { type: String, required: true }, // 视频标题
     description: { type: String, required: true }, // 视频描述
-    playUrl: { type: String, required: true }, // 视频播放地址
+    playUrl: { type: String, required: false }, // 视频播放地址
     cover: { type: String, required: true }, // 视频封面
     user: { type: mongoose.ObjectId, required: true, ref: 'User' }, // 视频作者
     createdAt: { type: Date, default: Date.now }, // 创建时间
