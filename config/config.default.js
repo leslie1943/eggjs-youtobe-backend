@@ -40,9 +40,15 @@ module.exports = (appInfo) => {
     },
   }
 
+  // json web token
   config.jwt = {
     secret: '68fc7856-2359-4bd4-85d2-8e9914bb63d5',
     expiresIn: '1d',
+  }
+
+  // cross origin resource share
+  config.cors = {
+    origin: '*',
   }
 
   return {
