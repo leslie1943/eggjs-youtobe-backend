@@ -224,6 +224,45 @@ class VideoController extends Controller {
       message: '删除成功!',
     }
   }
+
+  // 💛 添加评论
+  async createVideoComment() {
+    const { Comment, Video } = this.app.model
+    const { videoId } = this.ctx.params
+    const { body } = this.ctx.request
+
+    // 数据验证
+    this.ctx.validate(
+      {
+        content: 'string',
+      },
+      body
+    )
+
+    const video = await Video.findById(videoId)
+    if (!video) {
+      this.ctx.throw(404)
+    }
+
+    // 创建评论
+    const comment = await new Comment({
+      content: body.content,
+      user: this.ctx.user._id,
+      video: videoId, // 给谁的评论
+    }).save()
+
+    // 更新视频的评论数量: 根据视频ID,查询Comments的数量 => 评论数量
+    video.commentsCount = await Comment.countDocuments({
+      video: videoId,
+    })
+
+    await video.save() // 更新
+
+    // mapping 评论所属用户和视频字段数据
+    await comment.populate('user').populate('video').execPopulate()
+
+    this.ctx.body = { comment }
+  }
 }
 
 module.exports = VideoController

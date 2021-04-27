@@ -47,4 +47,7 @@ module.exports = (app) => {
 
   // 🎬 视频: 删除视频
   router.delete('/videos/:videoId', auth, controller.video.deleteVideo)
+
+  // 🎬 视频: 添加评论
+  router.post('/videos/:videoId/comments', auth, controller.video.createVideoComment)
 }

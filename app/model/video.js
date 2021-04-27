@@ -11,6 +11,7 @@ module.exports = (app) => {
     playUrl: { type: String, required: false }, // 视频播放地址
     cover: { type: String, required: true }, // 视频封面
     user: { type: mongoose.ObjectId, required: true, ref: 'User' }, // 视频作者
+    commentsCount: { type: String, required: false },
     createdAt: { type: Date, default: Date.now }, // 创建时间
     updatedAt: { type: Date, default: Date.now }, // 更新时间
   })
