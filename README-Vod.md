@@ -191,3 +191,9 @@ self.statusText = '文件超时...'
 - `config`目录下新增`config.prod.js`和`config.local.js`文件
 - `config.prod.js`: 通过环境变量 `process.env` 获取
 - `config.local.js`: 通过配置 `私有文件` 获取
+
+
+### 创建视频
+- 使用 阿里云服务器上通过 `vue-demo`上传上去的`video id`
+- `egg.js`定义了接口, 并且访问 阿里云VOD获取了`AccessKeyID`和`AccessKeySecret`
+- 客户端访问接口地址,执行上传,在阿里云上生成一条记录
