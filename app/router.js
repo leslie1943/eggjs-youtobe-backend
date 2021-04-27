@@ -49,5 +49,18 @@ module.exports = (app) => {
   router.delete('/videos/:videoId', auth, controller.video.deleteVideo)
 
   // 🎬 视频: 添加评论
-  router.post('/videos/:videoId/comments', auth, controller.video.createVideoComment)
+  router.post('/videos/:videoId/comments', auth, controller.video.createComment)
+
+  // 🎬 视频: 获取视频的评论列表
+  router.get('/videos/:videoId/comments', app.middleware.auth({ required: false }), controller.video.getComments)
+
+  // 🎬 视频: 删除视频
+  router.delete('/videos/:videoId/comments/:commentId', auth, controller.video.deleteComment)
+
+  // 🎬 视频: 喜欢视频/不喜欢视频
+  router.post('/videos/:videoId/like', auth, controller.video.likeVideo)
+  router.post('/videos/:videoId/dislike', auth, controller.video.dislikeVideo)
+
+  // 🙎‍♂️ 获取用户喜欢的视频列表
+  router.get('/user/videos/liked', auth, controller.user.getUserLikedVideos)
 }

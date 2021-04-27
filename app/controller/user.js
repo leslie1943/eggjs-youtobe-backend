@@ -266,6 +266,44 @@ class UserController extends Controller {
       subscriptions,
     }
   }
+
+  // 获取用户喜欢的视频列表
+  async getUserLikedVideos() {
+    const { VideoLike, Video } = this.app.model
+    let { pageNum = 1, pageSize = 10 } = this.ctx.query
+    pageNum = Number.parseInt(pageNum)
+    pageSize = Number.parseInt(pageSize)
+
+    // 查询条件
+    const filterDoc = {
+      user: this.ctx.user._id,
+      like: 1,
+    }
+
+    // 喜欢
+    const likes = await VideoLike.find(filterDoc)
+      .sort({
+        createdAt: -1,
+      })
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize)
+
+    // 根据喜欢的条目 获取 真正的videos
+    const getVideos = Video.find({
+      _id: {
+        $in: likes.map((item) => item.video),
+      },
+    })
+
+    const getVideosCount = VideoLike.countDocuments(filterDoc)
+
+    const [videos, videosCount] = await Promise.all([getVideos, getVideosCount])
+
+    this.ctx.body = {
+      videos,
+      videosCount,
+    }
+  }
 }
 
 module.exports = UserController

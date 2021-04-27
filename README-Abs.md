@@ -1,7 +1,5 @@
 # egg-youtobe-backend
 
-## QuickStart
-
 <!-- add docs here for user -->
 ### 💛 项目目标/技术选项
 - online: https://utubeclone.netlify.app/
@@ -67,12 +65,6 @@
 - chrome 安装 yapi 扩展教程[https://juejin.cn/post/6844904057707085832]
 - 使用 Edge 浏览器搜索 `cross-request` 添加扩展
 - YApi 新版如何查看 http 请求数据[https://juejin.cn/post/6844903795743260685]
-
-### 💛 安装 egg 脚手架工具 / Development
--  npm install -g create-egg
--  npm i
--  npm run dev
--  open http://localhost:7001/
 
 ### 💛 Plugin: egg-mongoose
 - npm i egg-mongoose --save
@@ -212,11 +204,6 @@ router.prefix('/api/v1') // 设置基础路径
 |`/config/config.default.js`的`config.xxx`属性|`this.app.config`|`this.app.config.xxx`|
 |`/config/plugin.js` 的 `egg-validate`|`this.ctx`|`this.ctx.validate()`|
 
-### 🚀 Deploy
-```bash
-$ npm start
-$ npm stop
-```
 
 ### 🚀 获取当前用户信息
 0. 定义`auth`中间件
