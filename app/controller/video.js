@@ -198,6 +198,32 @@ class VideoController extends Controller {
       video,
     }
   }
+
+  // 💛 删除视频
+  async deleteVideo() {
+    const { Video } = this.app.model
+
+    const { videoId } = this.ctx.params
+
+    // 校验 Video 是否存在
+    const video = await Video.findById(videoId)
+    if (!video) {
+      this.ctx.throw(404, 'Video Not Found')
+    }
+
+    console.info('video file', video)
+
+    // 校验Video的作者是否是登录用户
+    if (!video.user.equals(this.ctx.user._id)) {
+      this.ctx.throw(403, '没有权限删除.')
+    }
+    await video.remove()
+
+    this.ctx.status = 204
+    this.ctx.body = {
+      message: '删除成功!',
+    }
+  }
 }
 
 module.exports = VideoController

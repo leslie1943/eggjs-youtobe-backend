@@ -44,4 +44,7 @@ module.exports = (app) => {
 
   // 🎬 视频: 修改视频
   router.patch('/videos/:videoId', auth, controller.video.updateVideo)
+
+  // 🎬 视频: 删除视频
+  router.delete('/videos/:videoId', auth, controller.video.deleteVideo)
 }
