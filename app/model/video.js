@@ -12,6 +12,8 @@ module.exports = (app) => {
     cover: { type: String, required: true }, // 视频封面
     user: { type: mongoose.ObjectId, required: true, ref: 'User' }, // 视频作者
     commentsCount: { type: String, required: false },
+    likesCount: { type: String, default: 0 }, // 被喜欢的
+    dislikesCount: { type: String, default: 0 }, // 被不喜欢的
     createdAt: { type: Date, default: Date.now }, // 创建时间
     updatedAt: { type: Date, default: Date.now }, // 更新时间
   })

@@ -211,8 +211,6 @@ class VideoController extends Controller {
       this.ctx.throw(404, 'Video Not Found')
     }
 
-    console.info('video file', video)
-
     // 校验Video的作者是否是登录用户
     if (!video.user.equals(this.ctx.user._id)) {
       this.ctx.throw(403, '没有权限删除.')
@@ -226,7 +224,7 @@ class VideoController extends Controller {
   }
 
   // 💛 添加评论
-  async createVideoComment() {
+  async createComment() {
     const { Comment, Video } = this.app.model
     const { videoId } = this.ctx.params
     const { body } = this.ctx.request
@@ -262,6 +260,164 @@ class VideoController extends Controller {
     await comment.populate('user').populate('video').execPopulate()
 
     this.ctx.body = { comment }
+  }
+
+  // 💛 获取视频的评论列表
+  async getComments() {
+    const { Comment } = this.app.model
+    const { videoId } = this.ctx.params
+
+    let { pageNum = 1, pageSize = 10 } = this.ctx.query
+    pageNum = Number.parseInt(pageNum)
+    pageSize = Number.parseInt(pageSize)
+
+    const comments = await Comment.find({ video: videoId })
+      .populate('user')
+      .populate('video')
+      .sort({ createAt: -1 }) // 倒序排序
+      .skip(Number.parseInt(pageNum - 1) * pageSize)
+      .limit(pageSize)
+
+    const commentTotal = await Comment.countDocuments({ video: videoId })
+
+    this.ctx.body = {
+      comments,
+      commentTotal,
+    }
+  }
+
+  // 💛 删除视频
+  async deleteComment() {
+    const { Video, Comment } = this.app.model
+    const { videoId, commentId } = this.ctx.params
+
+    // 校验 Video 是否存在
+    const video = await Video.findById(videoId)
+    if (!video) {
+      this.ctx.throw(404, 'Video Not Found.')
+    }
+
+    // 校验 Comment 是否存在
+    const comment = await Comment.findById(commentId)
+
+    if (!comment) {
+      this.ctx.throw(404, 'Comment Not Found.')
+    }
+
+    // 校验 Comment 的作者是否是登录用户
+    if (!comment.user.equals(this.ctx.user._id)) {
+      this.ctx.throw(403, '权限错误!')
+    }
+
+    // 删除评论
+    await comment.remove()
+
+    // 更新视频评论数
+    video.commentsCount = await Comment.countDocuments({
+      video: videoId,
+    })
+    await video.save()
+
+    this.ctx.status = 204
+  }
+
+  // 💛 喜欢视频
+  async likeVideo() {
+    const { Video, VideoLike } = this.app.model
+    const { videoId } = this.ctx.params
+    const userId = this.ctx.user._id
+    const video = await Video.findById(videoId)
+
+    if (!video) {
+      this.ctx.throw(404, 'Video Not Found')
+    }
+
+    // 通过视频获取 VideoLike document
+    const doc = await VideoLike.findOne({
+      user: userId,
+      video: videoId,
+    })
+
+    let isLiked = true
+
+    if (doc && doc.like === 1) {
+      await doc.remove() // 原来喜欢,现在取消喜欢,删除
+      isLiked = false
+    } else if (doc && doc.like === -1) {
+      doc.like = 1 // 原来不喜欢,现在喜欢,修改
+      await doc.save()
+    } else {
+      await new VideoLike({
+        user: userId,
+        video: videoId,
+        like: 1,
+      }).save()
+    }
+
+    // 更新喜欢视频的数量
+    video.likesCount = await VideoLike.countDocuments({ video: videoId, like: 1 })
+
+    // 更新不喜欢视频的数量
+    video.dislikesCount = await VideoLike.countDocuments({ video: videoId, like: -1 })
+
+    // 保存修改后的数据
+    await video.save()
+
+    this.ctx.body = {
+      video: {
+        ...video.toJSON(),
+        isLiked,
+      },
+    }
+  }
+
+  // 💛 不喜欢视频
+  async dislikeVideo() {
+    const { Video, VideoLike } = this.app.model
+    const { videoId } = this.ctx.params
+    const userId = this.ctx.user._id
+    const video = await Video.findById(videoId)
+
+    if (!video) {
+      this.ctx.throw(404, 'Video Not Found')
+    }
+
+    // 通过视频获取 VideoLike document
+    const doc = await VideoLike.findOne({
+      user: userId,
+      video: videoId,
+    })
+
+    const isDisliked = true
+
+    if (doc && doc.like === -1) {
+      await doc.remove() // 取消不喜欢
+    } else if (doc && doc.like === 1) {
+      doc.like = -1 // 原来喜欢,现在不喜欢
+      await doc.save()
+    } else {
+      await new VideoLike({
+        user: userId,
+        video: videoId,
+        like: -1, // 创建一条不喜欢的记录
+      }).save()
+    }
+
+    // 更新喜欢视频的数量
+    video.likesCount = await VideoLike.countDocuments({ video: videoId, like: 1 })
+
+    // 更新不喜欢视频的数量
+    video.dislikesCount = await VideoLike.countDocuments({ video: videoId, like: -1 })
+
+    // 保存修改后的数据
+    await video.save()
+
+    this.ctx.body = {
+      video: {
+        ...video.toJSON(),
+        isDisliked,
+      },
+    }
   }
 }
 
