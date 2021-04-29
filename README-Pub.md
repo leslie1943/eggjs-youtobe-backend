@@ -111,3 +111,10 @@ fastcgi.conf  koi-utf         mime.types  modules-enabled    proxy_params  sites
 
 
 ### 发布部署 - 使用 GitHub Action 实现自动更新
+- 打开项目的 `settings`->`action secrets`
+- 配置 `HOST`: 阿里云的主机IP
+- 配置 `PORT`: 默认`22`
+- 配置 `USERNAME`: 一般情况下`root`
+- 配置 `PASSWORD`: 登录阿里云远程服务器的密码`!Sdxxxxxxxxx`
+- 配置 `ACCESSKEYID`: 之前视频点播配置的数据
+- 配置 `ACCESSKEYSECRET`: 之前视频点播配置的数据
