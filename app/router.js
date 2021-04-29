@@ -6,7 +6,7 @@ module.exports = (app) => {
   router.prefix('/api/v1')
 
   // 🙎‍♂️ 登录和注册
-  router.post('/', controller.home.index)
+  router.get('/', controller.home.index)
   router.post('/users', controller.user.create)
   router.post('/users/login', controller.user.login)
 
