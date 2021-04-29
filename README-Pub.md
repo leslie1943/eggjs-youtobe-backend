@@ -94,3 +94,20 @@ sudo systemctl restart mongod
 
 ```
 3. 启动运行
+
+
+
+### 发布部署 - nginx反向代理和域名部署
+- 阿里云 => 域名服务 => 解析
+- 切换到终端: `cd /etc/nginx/`, 然后`ls` 得到以下文件:
+```
+conf.d        fastcgi_params  koi-win     modules-available  nginx.conf    scgi_params      sites-enabled  uwsgi_params
+fastcgi.conf  koi-utf         mime.types  modules-enabled    proxy_params  sites-available  snippets       win-utf
+```
+- `vi nginx.conf`: 不建议直接修改`nginx.conf`, 可以配置新的`conf`文件被配置文件加载, 因为`include /etc/nginx/conf.d/*.conf`的文件都会被解析
+- 创建`eggyoutube.conf`文件, 具体配置参考根目录下的`eggyoutube.conf`
+- 执行`systemctl reload nginx`
+- 然后在浏览器输入`egg.leslie1943.top/api/v1/videos`查验
+
+
+### 发布部署 - 使用 GitHub Action 实现自动更新
