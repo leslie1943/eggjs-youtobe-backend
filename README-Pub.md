@@ -87,17 +87,12 @@ sudo systemctl restart mongod
 ## Egg.js 应用部署
 - [部署文档](https://eggjs.org/zh-cn/core/deployment.html)
 
-## 手动部署 Egg.js
+## 🚀🚀 手动部署 Egg.js
 1. 代码提交到 `github` 远程仓库
 2. 远程服务器下载 `github` 远程仓库
-```bash
-
-```
 3. 启动运行
 
-
-
-### 发布部署 - nginx反向代理和域名部署
+### 🚀🚀 发布部署 - nginx反向代理和域名部署
 - 阿里云 => 域名服务 => 解析
 - 切换到终端: `cd /etc/nginx/`, 然后`ls` 得到以下文件:
 ```
@@ -110,7 +105,7 @@ fastcgi.conf  koi-utf         mime.types  modules-enabled    proxy_params  sites
 - 然后在浏览器输入`egg.leslie1943.top/api/v1/videos`查验
 
 
-### 发布部署 - 使用 GitHub Action 实现自动更新
+### 🚀🚀 发布部署 - 使用 GitHub Action 实现自动更新
 - 打开项目的 `settings`->`action secrets`
 - 配置 `HOST`: 阿里云的主机IP
 - 配置 `PORT`: 默认`22`
@@ -118,3 +113,16 @@ fastcgi.conf  koi-utf         mime.types  modules-enabled    proxy_params  sites
 - 配置 `PASSWORD`: 登录阿里云远程服务器的密码`!Sdxxxxxxxxx`
 - 配置 `ACCESSKEYID`: 之前视频点播配置的数据
 - 配置 `ACCESSKEYSECRET`: 之前视频点播配置的数据
+
+### 🚀🚀 发布部署 - 配置HTTPS证书
+- `阿里云`-`产品与服务`-`安全`-`SSL证书`
+- 域名类型: `单个域名`
+- 证书类型: `DV域名级SSL`
+- 证书等级: `免费版`
+
+
+- 💛💛💛 `证书资源包` 💛💛💛
+- 证书
+- 下载
+- 配置 nginx.conf
+- http 转发 https

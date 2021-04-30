@@ -10,8 +10,12 @@ class HomeController extends Controller {
     //   userName: 'admin',
     //   password: 'admin',
     // }).save()
+    let time = new Date().getTime()
+    setTimeout(() => {
+      time = new Date().getTime()
+    }, 1000)
 
-    this.ctx.body = 'Hello, Leslie'
+    this.ctx.body = `Hello, Leslie,${time}`
   }
 }
 
