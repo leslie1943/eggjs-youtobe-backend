@@ -11,7 +11,7 @@ class HomeController extends Controller {
     //   password: 'admin',
     // }).save()
     let time = new Date().getTime()
-    setTimeout(() => {
+    setInterval(() => {
       time = new Date().getTime()
     }, 1000)
 
