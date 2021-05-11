@@ -17,7 +17,7 @@ module.exports = (app) => {
     password: { type: String, required: true, select: false }, // 默认查询不包含密码
     avatar: { type: String, default: null }, // 头像
     cover: { type: String, default: null }, // 封面
-    channelDescription: { type: Number, default: 0 }, // 频道介绍
+    channelDescription: { type: String }, // 频道介绍
     subscribersCount: { type: String, default: null }, // 频道介绍
     createdAt: { type: Date, default: Date.now }, // 创建时间
     updatedAt: { type: Date, default: Date.now }, // 更新时间

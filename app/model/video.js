@@ -14,6 +14,8 @@ module.exports = (app) => {
     commentsCount: { type: String, required: false },
     likesCount: { type: String, default: 0 }, // 被喜欢的
     dislikesCount: { type: String, default: 0 }, // 被不喜欢的
+    viewsCount: { type: String, default: 0 }, // 观看次数
+    vodVideoId: { type: String, required: false }, // 阿里云视频ID
     createdAt: { type: Date, default: Date.now }, // 创建时间
     updatedAt: { type: Date, default: Date.now }, // 更新时间
   })

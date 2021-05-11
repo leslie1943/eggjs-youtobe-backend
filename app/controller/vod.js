@@ -28,6 +28,18 @@ class VodController extends Controller {
     // 第一个参数是 action
     this.ctx.body = await this.app.vodClient.request('RefreshUploadVideo', query, {})
   }
+
+  // 获取视频播放凭证
+  async getVideoPlayAuth() {
+    const query = this.ctx.query
+    this.ctx.validate(
+      {
+        VideoId: { type: 'string' },
+      },
+      query
+    )
+    this.ctx.body = await this.app.vodClient.request('GetVideoPlayAuth', query, {})
+  }
 }
 
 module.exports = VodController

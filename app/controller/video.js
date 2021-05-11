@@ -31,11 +31,14 @@ class VideoController extends Controller {
 
   // 💛 获取视频
   async getVideo() {
-    const { Video, Like, Subscription } = this.app.model
+    const { Video, VideoLike, Subscription } = this.app.model
     const { videoId } = this.ctx.params
 
     // 找到视频记录
-    let video = await Video.findById(videoId).populate('user', '_id username avatar subscribersCount')
+    let video = await Video.findById(videoId).populate(
+      'user',
+      '_id username avatar subscribersCount channelDescription'
+    )
 
     if (!video) {
       this.ctx.throw(404, 'Video Not Found.')
@@ -51,11 +54,11 @@ class VideoController extends Controller {
     // 登录状态
     if (this.ctx.user) {
       const userId = this.ctx.user._id
-      if (await Like.findOne({ user: userId, video: videoId, like: 1 })) {
+      if (await VideoLike.findOne({ user: userId, video: videoId, like: 1 })) {
         video.isLiked = true
       }
 
-      if (await Like.findOne({ user: userId, video: videoId, like: -1 })) {
+      if (await VideoLike.findOne({ user: userId, video: videoId, like: -1 })) {
         video.isDisliked = true
       }
 
@@ -267,14 +270,14 @@ class VideoController extends Controller {
     const { Comment } = this.app.model
     const { videoId } = this.ctx.params
 
-    let { pageNum = 1, pageSize = 10 } = this.ctx.query
+    let { pageNum = 1, pageSize = 100 } = this.ctx.query
     pageNum = Number.parseInt(pageNum)
     pageSize = Number.parseInt(pageSize)
 
     const comments = await Comment.find({ video: videoId })
       .populate('user')
       .populate('video')
-      .sort({ createAt: -1 }) // 倒序排序
+      .sort({ createdAt: -1 }) // 倒序排序
       .skip(Number.parseInt(pageNum - 1) * pageSize)
       .limit(pageSize)
 
